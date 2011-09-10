@@ -1,0 +1,133 @@
+
+grammar GdbResponse
+
+  # A generic response from GDB.
+  rule response
+    initial_output / output / notification / final_output
+  end
+
+  # The response returned by GDB when we first connect.
+  rule initial_output
+    terminator #<InitialResponse> this throws extension error?
+  end
+
+  # The response returned by GDB when we quit (-gdb-exit).
+  rule final_output
+    _token:token? '^exit' eol <Rubug::Gdb::Parser::FinalResponse>
+  end
+  
+  # A generic GDB response.
+  rule output
+    _oob_records:oob_record* _result_record:result_record terminator <Rubug::Gdb::Parser::Response>
+  end
+
+  # An asynchronous GDB notification.
+  rule notification
+    _oob_records:oob_record+ terminator <Rubug::Gdb::Parser::Notification>
+  end
+
+  # A result record returned from a Rubug::Gdb command.
+  rule result_record
+    _token:token? _record_type:'^' _record_class:result_class _results:(comma _result:result )* eol <Rubug::Gdb::Parser::ResultRecord>
+  end
+
+  # An asynchronous (or out-of-band) record, may be an async or stream record.
+  rule oob_record
+    ( _token:token? _record_type:'*' _record_class:async_class _results:(comma _result:result)* eol <Rubug::Gdb::Parser::AsyncExecRecord> ) /
+    ( _token:token? _record_type:'+' _record_class:async_class _results:(comma _result:result)* eol <Rubug::Gdb::Parser::AsyncStatusRecord> ) /
+    ( _token:token? _record_type:'=' _record_class:async_class _results:(comma _result:result)* eol <Rubug::Gdb::Parser::AsyncNotifyRecord> ) /
+    ( _token:token? _record_type:'~' _results:c_string eol <Rubug::Gdb::Parser::StreamConsoleRecord> ) /
+    ( _token:token? _record_type:'@' _results:c_string eol <Rubug::Gdb::Parser::StreamTargetRecord> ) /
+    ( _token:token? _record_type:'&' _results:c_string eol <Rubug::Gdb::Parser::StreamLogRecord> )
+  end
+
+  rule result_class
+    'done' / 'running' / 'connected' / 'error' / 'exit'
+  end
+
+  rule async_class
+    #'stopped' / 
+    'stopped' / 'thread-group-added' / 'thread-created'
+  end
+
+  rule result
+    _name:variable '=' _value:value <Rubug::Gdb::Parser::Result>
+  end
+
+  rule variable
+    # Any string - strings may contain dashes.
+    [a-zA-Z] [a-zA-Z0-9\-]*  <Rubug::Gdb::Parser::Name>
+  end
+
+  rule value
+    ( const / tuple / list )
+  end
+
+  rule const
+    c_string
+  end
+
+  rule comma
+    ',' <Rubug::Gdb::Parser::Punctuation>
+  end
+
+  rule openbrace
+    '{' <Rubug::Gdb::Parser::Punctuation>
+  end
+
+  rule closebrace
+    '}' <Rubug::Gdb::Parser::Punctuation>
+  end
+
+  rule openbracket
+    '[' <Rubug::Gdb::Parser::Punctuation>
+  end
+
+  rule closebracket
+    ']' <Rubug::Gdb::Parser::Punctuation>
+  end
+
+  # A tuple is a commented separated list of name-value pairs inside {}.
+  rule tuple
+    openbrace closebrace <Rubug::Gdb::Parser::Tuple> / openbrace result (comma result)* closebrace <Rubug::Gdb::Parser::Tuple> # Is there a better -- more linear -- way to write this?
+  end
+
+  # A list is either a list of values (constants, tuples, lists) inside [], or a list of name-value pairs inside [].
+  rule list
+    openbracket closebracket <Rubug::Gdb::Parser::List> / openbracket value (comma value)* closebracket <Rubug::Gdb::Parser::List> / openbracket result (comma result)* closebracket <Rubug::Gdb::Parser::List>
+  end
+
+  rule c_string
+    '"' _unquoted_c_string:( c_escaped_quote / c_char )* '"' <Rubug::Gdb::Parser::Const>
+  end
+
+  rule c_escaped_quote
+    '\\"'
+  end
+
+  rule c_char
+    ( !'"' . )
+  end
+
+  # Any sequence of digits
+  rule token
+    [\d]+
+  end
+
+  # Response terminator.
+  rule terminator
+    '(gdb)' hspace* eol # XXX hspace* not in spec
+  end
+
+  # Horizontal whitespace (htab or space character).
+  rule hspace
+    [ \t]
+  end
+
+  # End of line.
+  rule eol
+    "\r\n" / "\n"
+  end
+
+end
+

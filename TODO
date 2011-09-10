@@ -1,0 +1,40 @@
+
+ * Docs, README
+
+ * Register bug: sometimes returns string in place of hash.
+
+ * Abstractions for simpler use
+
+     * Resolve symbol address
+     * Examine disassembly
+     * Search for opcode or bytes
+     * Assemble op-codes to bytes
+     * Memory watchpoints
+     * Read and write to memory
+     * Threads and thread contexts
+       Eg breakpoint in t1; how do I then disable bps in all other t's?
+     * Function emulation/hooking/code insertion.
+
+ * Jdb?
+
+ * Unit tests:
+     rubug main class
+     cli_map
+     parser...
+
+ * Include console/log messages in debug output
+
+ * Gemify
+
+ * GDB server?
+
+ * Example scripts:
+     write_core example
+     Get all function names, elf library?
+     Generate call graph
+     Integration with standard fuzzers
+
+ * Language specific extensions
+ http://weblog.jamisbuck.org/2006/9/22/inspecting-a-live-ruby-process
+ http://eigenclass.org/hiki.rb?ruby+live+process+introspection
+

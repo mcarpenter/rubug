@@ -1,0 +1,25 @@
+
+= rubug
+
+Author:: Martin Carpenter
+Email:: mcarpenter@free.fr
+Copyright:: Copyright (c) Martin Carpenter 2011
+
+== Warning
+
+This project is:
+
+ * incomplete
+ * unsupported
+
+I've published it in response to this stackoverflow question:
+http://stackoverflow.com/questions/6822584/how-to-control-gdb-within-c-or-python-code
+
+I'll take a look at any patch submissions but that's about it.
+
+== Background 
+
+Rubug enables programmatic control of the GDB debugger (and is extensible
+to other deubbgers using similar mechanisms). It is lightly inspired by
+Pedram Amini's PyDbg module (part of PaiMei).
+
