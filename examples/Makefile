@@ -1,5 +1,5 @@
 
-EXAMPLES=breakpoint function_address simple_fuzzer
+EXAMPLES=breakpoint disassemble function_address register simple_fuzzer
 
 .PHONY: all
 all:
