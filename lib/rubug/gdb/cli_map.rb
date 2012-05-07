@@ -19,15 +19,15 @@ module Rubug
         subcommand = args.shift.to_sym
         case subcommand
         when :break # information about single breakpoint
-      '-break-info' # alternatively, -break-list
+          '-break-info' # alternatively, -break-list
         when :frame # information about current stack frame
           cli(:frame)
         when :locals # local variables and values for the this frame
-      '-stack-list-locals 1'
+          '-stack-list-locals 1'
         when :thread # current threads
-      '-thread-info'
+          '-thread-info'
         when :locals # local variables and function arguments and their values for the selected frame
-      '-stack-list-variables 1'
+          '-stack-list-variables 1'
         else
           raise ArgumentError, "Unknown subcommand #{subcommand.inspect} for #{command.inspect}"
         end
