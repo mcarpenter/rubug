@@ -22,6 +22,13 @@ def check_for_crash(gdb, event)
     puts 'Exit'
     gdb.stop_event_loop
     exit
+  when :signal
+    puts "Signal received:"
+    puts event.response
+    gdb.stop_event_loop
+    exit
+  else
+    raise RuntimeError, "Unexpected event type #{event.type.inspect}"
   end
 end
 
