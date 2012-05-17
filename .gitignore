@@ -1,0 +1,8 @@
+pkg
+rdoc
+gdb_response_parser.rb
+examples/simple_fuzzer/simple_fuzzer
+examples/breakpoint/factorial
+examples/disassemble/disassemble
+examples/function_address/function_address
+examples/register/register
