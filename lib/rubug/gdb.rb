@@ -306,7 +306,7 @@ module Rubug
     def cli(command, *args, &blk) # XXX &blk
       if Rubug::Gdb::CliMap::map_exists?(command)
         gdb_command = Rubug::Gdb::CliMap::gdb_command(command, *args)
-        if [ :run, :cont, :continue, :c ].include? command.to_sym
+        if [ :run, :cont, :continue, :c, :stepi ].include? command.to_sym
           expected_result = :running
         else
           expected_result = :done
