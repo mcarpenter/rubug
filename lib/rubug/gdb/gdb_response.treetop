@@ -18,7 +18,7 @@ grammar GdbResponse
   
   # A generic GDB response.
   rule output
-    _oob_records:oob_record* _result_record:result_record terminator <Rubug::Gdb::Parser::Response>
+    _oob_records:oob_record* _result_record:result_record _oob_records:oob_record* terminator <Rubug::Gdb::Parser::Response>
   end
 
   # An asynchronous GDB notification.
@@ -28,12 +28,13 @@ grammar GdbResponse
 
   # A result record returned from a Rubug::Gdb command.
   rule result_record
-    _token:token? _record_type:'^' _record_class:result_class _results:(comma _result:result )* eol <Rubug::Gdb::Parser::ResultRecord>
+    _token:token? _record_type:'^' _record_class:result_class _results:(comma _result:result)* eol <Rubug::Gdb::Parser::ResultRecord>
   end
 
   # An asynchronous (or out-of-band) record, may be an async or stream record.
   rule oob_record
     ( _token:token? _record_type:'*' _record_class:async_class _results:(comma _result:result)* eol <Rubug::Gdb::Parser::AsyncExecRecord> ) /
+    ( _token:token? _record_type:'*' _record_class:result_class _results:(comma _result:result)* eol <Rubug::Gdb::Parser::AsyncExecRecord> ) /
     ( _token:token? _record_type:'+' _record_class:async_class _results:(comma _result:result)* eol <Rubug::Gdb::Parser::AsyncStatusRecord> ) /
     ( _token:token? _record_type:'=' _record_class:async_class _results:(comma _result:result)* eol <Rubug::Gdb::Parser::AsyncNotifyRecord> ) /
     ( _token:token? _record_type:'~' _results:c_string eol <Rubug::Gdb::Parser::StreamConsoleRecord> ) /
@@ -47,7 +48,7 @@ grammar GdbResponse
 
   rule async_class
     #'stopped' / 
-    'stopped' / 'thread-group-added' / 'thread-created'
+    'stopped' / 'thread-group-started' / 'thread-group-added' / 'thread-created' / 'thread-exited' / 'thread-group-exited' / 'library-loaded' / 'breakpoint-modified'
   end
 
   rule result
