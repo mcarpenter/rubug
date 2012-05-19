@@ -15,7 +15,7 @@ gdb.run
 puts 'Registers:'
 registers = gdb.registers
 puts registers.inspect
-registers.each do |reg|
+registers.compact.each do |reg|
   puts "#{reg}: #{gdb.register(reg)}"
 end
 gdb.quit

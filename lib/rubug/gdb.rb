@@ -268,29 +268,27 @@ module Rubug
       response = command("-data-list-register-values x #{index}")
       values = response.results[:register_values]
       raise RuntimeError, "Register `#{register_name}' contains more than one value" unless values.size == 1
-    require 'pp'
-    pp values.first
       value_s = values.first[:value]
-      # XXX BUG
-      # why is this value a string, not itself a hash??
+      # XXX BUG why is this value a string, not itself a hash??
       #{:value=>
       #    "{v4_float = {0x0, 0x0, 0x0, 0x0}, v2_double = {0x0, 0x0}, v16_int8 = {0x0 <repeats 16 times>}, v8_int16 = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, v4_int32 = {0x0, 0x0, 0x0, 0x0}, v2_int64 = {0x0, 0x0}, uint128 = 0x00000000000000000000000000000000}",
       #       :number=>39}
-
       case value_s
       when String
-        pp value_s.to_i(16)
+        value_s.to_i(16)
       else
-        pp value_s
+        value_s
       end
     end
 
     # Return a list of names of all registers available for the
-    # current target as symbols.
+    # current target as symbols. Some of the register names
+    # may be nil: this is a feature of -data-list-register-names
+    # to preserve indexes.
     def registers
       command('-data-list-register-names').
         results[:register_names].
-        map { |reg| reg.to_sym }
+        map { |reg| reg.empty? ? nil : reg.to_sym }
     end
 
     private
